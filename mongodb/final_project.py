@@ -7,31 +7,107 @@
 # What data is it not ok to lose in your app? What can you do in your commands to mitigate the risk of lost data?
 #
 #
+import datetime
+
+
+# Action 1: <User registers for an account with input Email: input_email, Name: input_name, Password: input_pw>
+db.User.insert({
+
+   "Email": input_email,
+   "Name": input_name,
+   "Password": input_pw,
+   "Follower":
+   [
+   ],
+   "Following":
+   [
+   ],
+   "Liked":
+   [
+   ],
+   "Disliked":
+   [
+   ],
+   "Commented":
+   [
+   ]
+
+})
+
+# Action 2: <User posts a video with Name: input_name>
+db.Video.insert({
+
+   "Email": current_user_email,
+   "Name": input_name,
+   "Created_at": datetime.date.today(),
+   "Up_Vote":
+   [
+   ],
+   "Down_Vote":
+   [
+   ],
+   "Comment":
+   [
+   ],
+   "Views":
+   [
+   ]
+
+})
+
+# Action 3: <A user sees all the video of the people they follow from the last week>
+timeDelta = datetime.timedelta(days=7)
+today = datetime.date.today()
+output = []
+
+following = db.Users.find({ "User.Following": current_user_email })
+
+for matched in following:
+    in_range = list(db.Video.find({"$and":[{"Email": matched["Email"]}, {"Created_at": {"$gte" : today - timeDelta, "$lt": today + timeDelta}}]}))
+    output += in_range
+
+return output
+
+# Action 4: <A user sees all the video of one particular person they follow, with input target_user_email>
+following = db.Users.find({ "User.Following": target_user_email})
+return list(db.Video.find({"$and":[{"Email": target_user_email}, {"Created_at": {"$gte" : today - timeDelta, "$lt": today + timeDelta}}]}))
+
+# Action 5: <A user comments on another's video, with input source_user_email, target_user_email, video_name, comment_content>
+db.Users.update({"Email" : source_user_email},{"$push": {"Commented": {"Email": target_user_email,"Name": video_name,"Content" : comment_content}}})
+
+# Action 6: <A user starts following a new person, with input source_user_email, target_user_email>
+db.Users.update({"Email" : source_user_email},{"$push": {"Following": {"Email": target_user_email}}})
+db.Users.update({"Email" : target_user_email},{"$push": {"Follower": {"Email": source_user_email}}})
+
+# Action 7: <A user viewed a video, then dislikes it, input: source_user_email, target_user_email, video_name>
+db.Users.update({"Email" : source_user_email},{"$push": {"Disliked": {"Email": target_user_email,"Name": video_name}}})
+db.Video.update({"$and": [{"Email" : target_user_email},{"Name": video_name}]},{"$push": {"Down_Vote": {"Email": source_user_email,"Name": video_name}}})
+db.Video.update({"$and": [{"Email" : target_user_email},{"Name": video_name}]},{"$push": {"Views": {"Email": source_user_email}}})
+
+# Action 8: <A user viewed a video, then likes it, input: source_user_email, target_user_email, video_name>
+db.Users.update({"Email" : source_user_email},{"$push": {"Liked": {"Email": target_user_email,"Name": video_name}}})
+db.Video.update({"$and": [{"Email" : target_user_email},{"Name": video_name}]},{"$push": {"Up_Vote": {"Email": source_user_email,"Name": video_name}}})
+db.Video.update({"$and": [{"Email" : target_user_email},{"Name": video_name}]},{"$push": {"Views": {"Email": source_user_email}}})
 
 
 
-# Action 1: <describe the action here>
 
 
-# Action 2: <describe the action here>
 
 
-# Action 3: <describe the action here>
 
 
-# Action 4: <describe the action here>
 
 
-# Action 5: <describe the action here>
 
 
-# Action 6: <describe the action here>
 
 
-# Action 7: <describe the action here>
 
 
-# Action 8: <describe the action here>
+
+
+
 
 
 
