@@ -1,11 +1,11 @@
 # Put the use case you chose here. Then justify your database choice:
-#
+# I chose to write a Youtube-like video sharing database. I choose MongoDB because, in addition to conventional advantages of NoSQL databases, MongoDB also provides Documented Oriented Storage, which stores data in the form of JSON style documents. It also handles auto-sharding and fast in-place updates, which is great for scalability.
 #
 # Explain what will happen if coffee is spilled on one of the servers in your cluster, causing it to go down.
-#
+# MongoDB replicates database into a distributed system, ensuring that as long as a write or insert is successfully propagated to adequate distributed servers, our data is safe. Therefore, if coffee spilled on one of the servers, given that all previous inserts and writes were duplicated, the data is still safe.
 #
 # What data is it not ok to lose in your app? What can you do in your commands to mitigate the risk of lost data?
-#
+# User info, especially password is critical. We can avoid explicitly saving the password. We can either use a tokenized structure that does not store user secret, or to encrypt the user secret before saving it.
 #
 import datetime
 
